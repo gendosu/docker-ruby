@@ -2,11 +2,11 @@
   {
     "ruby": "2.7.7",
     "sha256": "b38dff2e1f8ce6e5b7d433f8758752987a6b2adfd9bc7571dbc42ea5d04aaaaa",
-    "dir": ["2.7/bullseye"]
+    "dir": ["2.7/bullseye", "2.7/slim-bullseye"]
   },
   {
     "ruby": "2.7.8",
     "sha256": "b38dff2e1f8ce6e5b7d433f8758752987a6b2adfd9bc7571dbc42ea5d04e3e4c",
-    "dir": ["2.7/bullseye"]
+    "dir": ["2.7/bullseye", "2.7/slim-bullseye"]
   }
 ]
