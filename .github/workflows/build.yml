@@ -1,15 +1,15 @@
 name: "build"
 
-on: 
-  workflow_dispatch:
-    inputs:
-      version:
-        type: choice
-        description: "Ruby Version"
-        options:
-          - "2.7.x"
-          - "2.7.7"
-          - "3.0.8"
+on: push:
+  # workflow_dispatch:
+  #   inputs:
+  #     version:
+  #       type: choice
+  #       description: "Ruby Version"
+  #       options:
+  #         - "2.7.x"
+  #         - "2.7.7"
+  #         - "3.0.8"
 
 env:
   DOCKER_BUILDKIT: 1
