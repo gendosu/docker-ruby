@@ -24,13 +24,11 @@ jobs:
             sha256: b38dff2e1f8ce6e5b7d433f8758752987a6b2adfd9bc7571dbc42ea5d04aaaaa
           - ruby: 2.7.8
             sha256: b38dff2e1f8ce6e5b7d433f8758752987a6b2adfd9bc7571dbc42ea5d04e3e4c
-        versions: [X86_64, ARM64]
 
     steps:
       - name: test
         run: |
           echo ${{ github.event.inputs.version }}
-          echo ${{ matrix.arch }}
           echo ${{ matrix.ruby }}
           echo ${{ matrix.sha256 }}
       # -
