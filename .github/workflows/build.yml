@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      include: ${{ steps.set-matrix.outputs.value }}
+      include: ${{ steps.set-matrix.outputs.include }}
 
     steps:
       -
