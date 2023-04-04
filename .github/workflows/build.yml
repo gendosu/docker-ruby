@@ -29,6 +29,7 @@ jobs:
 
       - name: set matrix
         run: |
+          cat versions.json
           cat versions.json >> $GITHUB_OUTPUT
 
   build:
