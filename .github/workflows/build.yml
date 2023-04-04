@@ -40,7 +40,7 @@ jobs:
           echo "include='${include}'"
           echo "RUBY_VERSION='${RUBY_VERSION}'" >> $GITHUB_OUTPUT
           echo "RUBY_SHA='${RUBY_SHA}'" >> $GITHUB_OUTPUT
-          echo "RUBY_DIR='${RUBY_DIR}'" >> $GITHUB_OUTPUT
+          echo "RUBY_DIR=${RUBY_DIR}" >> $GITHUB_OUTPUT
 
   build:
     runs-on: ubuntu-latest
