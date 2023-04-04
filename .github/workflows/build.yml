@@ -20,7 +20,8 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      include: ${{ steps.set-matrix.outputs.include }}
+      RUBY_VERSION: ${{ steps.set-matrix.outputs.include }}
+      RUBY_SHA: ${{ steps.set-matrix.outputs.include }}
 
     steps:
       -
@@ -31,16 +32,19 @@ jobs:
         id: set-matrix
         run: |
           cat versions.json
-          include=`cat versions.json | jq -c '.[] | select(.ruby == "2.7.7") | {"include": .}'`
+          # include=`cat versions.json | jq -c '.[] | select(.ruby == "2.7.7") | {"include": .}'`
+          RUBY_VERSION=`cat versions.json | jq -c '.[] | select(.ruby == "2.7.7") | .ruby'`
+          RUBY_SHA=`cat versions.json | jq -c '.[] | select(.ruby == "2.7.7") | .sha256'`
           echo "include='${include}'"
-          echo "include='${include}'" >> $GITHUB_OUTPUT
+          echo "RUBY_VERSION='${RUBY_VERSION}'" >> $GITHUB_OUTPUT
+          echo "RUBY_SHA='${RUBY_SHA}'" >> $GITHUB_OUTPUT
 
   build:
     runs-on: ubuntu-latest
     needs: set-matrix
 
-    strategy:
-      matrix: ${{ needs.set-matrix.outputs.include }}
+    # strategy:
+    #   matrix: ${{ fromJSON(needs.set-matrix.outputs.include) }}
     #     # include:
     #     #   - ruby: 2.7.7
     #     #     sha256: b38dff2e1f8ce6e5b7d433f8758752987a6b2adfd9bc7571dbc42ea5d04aaaaa
@@ -51,9 +55,10 @@ jobs:
       -
         name: test
         run: |
-          echo ${{ matrix.ruby }}
-          echo ${{needs.set-matrix.outputs.include}}
-          echo ${{fromJSON(needs.set-matrix.outputs.include)}}
+          # echo ${{ matrix.ruby }}
+          echo ${{needs.set-matrix.outputs.RUBY_VERSION}}
+          echo ${{needs.set-matrix.outputs.RUBY_SHA}}
+          # echo ${{fromJSON(needs.set-matrix.outputs.include)}}
           # echo $RUBY_VERSION
         # env:
         #   RUBY_VERSION: ${{fromJson(needs.set-matrix.outputs.include).ruby}}
