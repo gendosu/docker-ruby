@@ -20,8 +20,8 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      RUBY_VERSION: ${{ steps.set-matrix.outputs.include }}
-      RUBY_SHA: ${{ steps.set-matrix.outputs.include }}
+      RUBY_VERSION: ${{ steps.set-matrix.outputs.RUBY_VERSION }}
+      RUBY_SHA: ${{ steps.set-matrix.outputs.RUBY_SHA }}
 
     steps:
       -
