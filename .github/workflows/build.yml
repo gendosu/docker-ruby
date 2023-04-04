@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      something: ${{ steps.set-matrix.outputs.value }}
+      include: ${{ steps.set-matrix.outputs.value }}
 
     steps:
       -
@@ -40,7 +40,7 @@ jobs:
     needs: set-matrix
 
     strategy:
-      matrix: ${{ fromJson(needs.set-matrix.outputs.include) }}
+      matrix: ${{ fromJSON(needs.set-matrix.outputs.include) }}
         # include:
         #   - ruby: 2.7.7
         #     sha256: b38dff2e1f8ce6e5b7d433f8758752987a6b2adfd9bc7571dbc42ea5d04aaaaa
