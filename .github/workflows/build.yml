@@ -55,11 +55,8 @@ jobs:
       -
         name: test
         run: |
-          # echo ${{ matrix.ruby }}
           echo ${{needs.set-matrix.outputs.RUBY_VERSION}}
           echo ${{needs.set-matrix.outputs.RUBY_SHA}}
-          # echo ${{fromJSON(needs.set-matrix.outputs.include)}}
-          # echo $RUBY_VERSION
         # env:
         #   RUBY_VERSION: ${{fromJson(needs.set-matrix.outputs.include).ruby}}
 
