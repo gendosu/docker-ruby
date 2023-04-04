@@ -55,7 +55,7 @@ jobs:
           echo ${{fromJson(needs.set-matrix.outputs.something)}}
           echo $RUBY_VERSION
         env:
-          RUBY_VERSION: ${{fromJson(needs.set-matrix.outputs.something).title}}
+          RUBY_VERSION: ${{fromJson(needs.set-matrix.outputs.something).ruby}}
 
           # echo ${{ github.event.inputs.version }}
           # echo ${{ matrix.ruby }}
