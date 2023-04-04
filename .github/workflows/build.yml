@@ -48,7 +48,7 @@ jobs:
       -
         name: test
         run: |
-          echo ${{fromJson(needs.set-matrix.outputs.something)}}
+          echo ${{needs.set-matrix.outputs.something}}
 
           # echo ${{ github.event.inputs.version }}
           # echo ${{ matrix.ruby }}
