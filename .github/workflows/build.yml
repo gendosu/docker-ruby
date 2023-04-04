@@ -63,7 +63,7 @@ jobs:
           echo ${{needs.set-matrix.outputs.RUBY_VERSION}}
           echo ${{needs.set-matrix.outputs.RUBY_SHA}}
           echo ${{needs.set-matrix.outputs.RUBY_DIR}}
-           ${{fromJson(needs.set-matrix.outputs.RUBY_DIR)}}
+          echo ${{ matrix.dir }}
         # env:
         #   RUBY_VERSION: ${{fromJson(needs.set-matrix.outputs.include).ruby}}
 
