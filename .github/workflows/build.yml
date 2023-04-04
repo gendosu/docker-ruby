@@ -34,7 +34,8 @@ jobs:
         name: test
         if: matrix.ruby == github.event.inputs.version
         run: |
-          echo ${{ fromJson(`cat versions.json`) }}
+          export VERSIONS=$(cat versions.json)
+          echo ${{ fromJson(VERSIONS) }}
           # echo ${{ github.event.inputs.version }}
           # echo ${{ matrix.ruby }}
           # echo ${{ matrix.sha256 }}
