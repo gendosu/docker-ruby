@@ -52,6 +52,7 @@ jobs:
         name: test
         run: |
           echo ${{needs.set-matrix.outputs.something}}
+          echo ${{fromJson(needs.set-matrix.outputs.something).title}}
           echo $RUBY_VERSION
         env:
           RUBY_VERSION: ${{fromJson(needs.set-matrix.outputs.something).title}}
