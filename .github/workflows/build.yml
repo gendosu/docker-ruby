@@ -16,8 +16,24 @@ env:
   DISABLE_ASSET_SYNC: 1
 
 jobs:
+  set-matrix:
+    runs-on: ubuntu-latest
+
+    outputs:
+      something: ${{ steps.set-matrix.outputs.value }}
+
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+
+      - name: set matrix
+        run: |
+          cat versions.json >> $GITHUB_OUTPUT
+
   build:
     runs-on: ubuntu-latest
+
     # strategy:
     #   matrix:
     #     include:
@@ -28,14 +44,12 @@ jobs:
 
     steps:
       -
-        name: Checkout
-        uses: actions/checkout@v3
-      - 
         name: test
-        if: matrix.ruby == github.event.inputs.version
         run: |
-          export VERSIONS=$(cat versions.json)
-          echo ${{ fromJson(VERSIONS) }}
+          echo $hoge
+        env:
+          hoge: ${{fromJson(needs.set-matrix.outputs.something)}}
+
           # echo ${{ github.event.inputs.version }}
           # echo ${{ matrix.ruby }}
           # echo ${{ matrix.sha256 }}
