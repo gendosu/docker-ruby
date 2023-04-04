@@ -32,6 +32,7 @@ jobs:
         run: |
           cat versions.json
           version=`cat versions.json | jq -c '.[] | select(.ruby == "2.7.7")'`
+          echo "value=${version}"
           echo "value=${version}" >> $GITHUB_OUTPUT
 
   build:
