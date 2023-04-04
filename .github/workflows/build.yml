@@ -52,9 +52,9 @@ jobs:
         name: test
         run: |
           echo ${{needs.set-matrix.outputs.something}}
-          # echo $hoge
-        # env:
-        #   hoge: ${{fromJson(needs.set-matrix.outputs.something)}}
+          echo $RUBY_VERSION
+        env:
+          RUBY_VERSION: ${{fromJson(needs.set-matrix.outputs.something).ruby}}
 
           # echo ${{ github.event.inputs.version }}
           # echo ${{ matrix.ruby }}
