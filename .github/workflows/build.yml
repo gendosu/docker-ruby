@@ -30,7 +30,7 @@ jobs:
       - name: set matrix
         run: |
           cat versions.json
-          echo "value=`cat versions.json``" >> $GITHUB_OUTPUT
+          echo "value=`cat versions.json`" >> $GITHUB_OUTPUT
 
   build:
     runs-on: ubuntu-latest
