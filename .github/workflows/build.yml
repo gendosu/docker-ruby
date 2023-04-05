@@ -102,7 +102,7 @@ jobs:
         id: setup
         run: |
           TAG=${{ needs.set-matrix.outputs.RUBY_DIR }}-${{ matrix.dir }}
-          DIR=${{ needs.set-matrix.outputs.RUBY_DIR }}-${{ matrix.dir }}
+          DIR=${{ needs.set-matrix.outputs.RUBY_DIR }}/${{ matrix.dir }}
           echo "TAG=$TAG" >> $GITHUB_OUTPUT
           echo "DIR=$DIR" >> $GITHUB_OUTPUT
           echo ${{ steps.setup.outputs.DIR }}
