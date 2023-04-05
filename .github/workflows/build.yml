@@ -40,7 +40,7 @@ jobs:
           RUBY_SHA=`cat versions.json | jq -c '.[] | select(.RUBY_VERSION == "2.7.7") | .sha256'`
           RUBY_BASES=`cat versions.json | jq -c '.[] | select(.RUBY_VERSION == "2.7.7") | .base'`
 
-          echo "RUBY_DIR='${RUBY_DIR}'" >> $GITHUB_OUTPUT
+          echo "RUBY_DIR=${RUBY_DIR}" >> $GITHUB_OUTPUT
           echo "RUBY_MAJOR='${RUBY_MAJOR}'" >> $GITHUB_OUTPUT
           echo "RUBY_VERSION='${RUBY_VERSION}'" >> $GITHUB_OUTPUT
           echo "RUBY_SHA='${RUBY_SHA}'" >> $GITHUB_OUTPUT
