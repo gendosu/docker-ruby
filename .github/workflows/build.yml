@@ -81,6 +81,7 @@ jobs:
         arch: ['linux/amd64'] #, 'linux/arm64']
 
     outputs:
+      TAG: ${{ steps.setup.outputs.TAG }}
       DIR: ${{ steps.setup.outputs.DIR }}
 
     steps:
@@ -100,7 +101,10 @@ jobs:
         name: setup
         id: setup
         run: |
-          echo "DIR=${{ needs.set-matrix.outputs.RUBY_DIR }}-${{ matrix.dir }}" >> $GITHUB_OUTPUT
+          TAG=${{ needs.set-matrix.outputs.RUBY_DIR }}-${{ matrix.dir }}
+          DIR=${{ needs.set-matrix.outputs.RUBY_DIR }}-${{ matrix.dir }}
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+          echo "DIR=$DIR" >> $GITHUB_OUTPUT
           echo ${{ steps.setup.outputs.DIR }}
 
       # -
@@ -117,10 +121,10 @@ jobs:
       #   with:
       #     username: ${{ secrets.DOCKERHUB_USERNAME }}
       #     password: ${{ secrets.DOCKERHUB_TOKEN }}
-      # -
-      #   name: Build and push
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     context: 2.7/bullseye
-      #     push: false
-      #     tags: gendosu/gentest:${{ needs.set-matrix2.outputs.RUBY_VERSION }}-${{ needs.set-matrix2.outputs.RUBY_BASES }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: ${{ steps.setup.outputs.DIR }}
+          push: false
+          tags: gendosu/gentest:${{ steps.setup.outputs.TAG }}
