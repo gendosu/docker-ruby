@@ -69,7 +69,7 @@ jobs:
 
     strategy:
       matrix:
-        dir: ${{ needs.set-matrix2.outputs.RUBY_DIRS }}
+        dir: ${{ fromJson( needs.set-matrix2.outputs.RUBY_DIRS ) }}
         arch: ['linux/amd64', 'linux/arm64']
 
     steps:
