@@ -97,8 +97,8 @@ jobs:
         name: setup
         id: setup
         run: |
-          echo "dir=${{needs.set-matrix.outputs.RUBY_DIR}}-${{ matrix.dir }}" >> $GITHUB_OUTPUT
-          echo ${{steps.setup.outputs.dir}}
+          dir=${{ needs.set-matrix.outputs.RUBY_DIR }}-${{ matrix.dir }}
+          echo $dir
 
       # -
       #   # Add support for more platforms with QEMU (optional)
