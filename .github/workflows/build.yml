@@ -45,7 +45,7 @@ jobs:
           echo "RUBY_VERSION='${RUBY_VERSION}'" >> $GITHUB_OUTPUT
           echo "RUBY_SHA='${RUBY_SHA}'" >> $GITHUB_OUTPUT
           echo "RUBY_BASES='${RUBY_BASES}'" >> $GITHUB_OUTPUT
-          echo $GITHUB_OUTPUT
+          echo $RUBY_BASES
 
   # set-matrix2:
   #   runs-on: ubuntu-latest
