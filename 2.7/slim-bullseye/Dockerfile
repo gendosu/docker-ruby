@@ -1,5 +1,9 @@
 FROM debian:bullseye-slim
 
+ARG RUBY_MAJOR 2.7
+ARG RUBY_VERSION 2.7.7
+ARG RUBY_DOWNLOAD_SHA256 b38dff2e1f8ce6e5b7d433f8758752987a6b2adfd9bc7571dbc42ea5d04e3e4c
+
 RUN set -eux; \
 	apt-get update; \
 	apt-get upgrade -y; \
@@ -24,9 +28,9 @@ RUN set -eux; \
 	} >> /usr/local/etc/gemrc
 
 ENV LANG C.UTF-8
-ENV RUBY_MAJOR 2.7
-ENV RUBY_VERSION 2.7.7
-ENV RUBY_DOWNLOAD_SHA256 b38dff2e1f8ce6e5b7d433f8758752987a6b2adfd9bc7571dbc42ea5d04e3e4c
+ENV RUBY_MAJOR=$RUBY_MAJOR
+ENV RUBY_VERSION=$RUBY_VERSION
+ENV RUBY_DOWNLOAD_SHA256=$RUBY_DOWNLOAD_SHA256
 
 # some of ruby's build scripts are written in ruby
 #   we purge system ruby later to make sure our final image uses what we just built

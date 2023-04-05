@@ -36,6 +36,8 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
 
       - name: set-matrix
         id: set-matrix
@@ -67,6 +69,8 @@ jobs:
   #     -
   #       name: Checkout
   #       uses: actions/checkout@v3
+        # with:
+        #   fetch-depth: 2
   #     -
   #       name: set-matrix2
   #       id: set-matrix2
@@ -103,6 +107,8 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
       -
         name: setup
         id: setup
@@ -127,10 +133,10 @@ jobs:
       #   with:
       #     username: ${{ secrets.DOCKERHUB_USERNAME }}
       #     password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Build and push
-        uses: docker/build-push-action@v4
-        with:
-          context: ${{ steps.setup.outputs.DIR }}
-          push: false
-          tags: gendosu/gentest:${{ steps.setup.outputs.TAG }}
+      # -
+      #   name: Build and push
+      #   uses: docker/build-push-action@v4
+      #   with:
+      #     context: ${{ steps.setup.outputs.DIR }}
+      #     push: false
+      #     tags: gendosu/gentest:${{ steps.setup.outputs.TAG }}

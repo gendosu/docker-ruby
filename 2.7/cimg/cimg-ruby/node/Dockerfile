@@ -1,4 +1,6 @@
-FROM cimg/ruby:2.7.7-node
+ARG RUBY_VERSION 2.7.7
+
+FROM cimg/ruby:$RUBY_VERSION-node
 
 RUN sudo apt-get update -qq && \
 	  sudo apt-get upgrade -y; \
