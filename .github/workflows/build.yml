@@ -80,6 +80,9 @@ jobs:
         dir: ${{ fromJson(needs.set-matrix.outputs.RUBY_BASES) }}
         arch: ['linux/amd64'] #, 'linux/arm64']
 
+    outputs:
+      DIR: ${{ steps.setup.outputs.DIR }}
+
     steps:
       -
         name: test
@@ -97,8 +100,8 @@ jobs:
         name: setup
         id: setup
         run: |
-          dir=${{ needs.set-matrix.outputs.RUBY_DIR }}-${{ matrix.dir }}
-          echo $dir
+          echo "DIR=${{ needs.set-matrix.outputs.RUBY_DIR }}-${{ matrix.dir }}" >> $GITHUB_OUTPUT
+          echo ${{ steps.setup.outputs.DIR }}
 
       # -
       #   # Add support for more platforms with QEMU (optional)
