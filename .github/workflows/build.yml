@@ -43,10 +43,10 @@ jobs:
         id: set-matrix
         run: |
           RUBY_DIR=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "2.7.7") | .RUBY_DIR'`
-          RUBY_MAJOR=`cat versions.json | jq -c '.[] | select(.RUBY_VERSION == "2.7.7") | .RUBY_MAJOR'`
-          RUBY_VERSION=`cat versions.json | jq -c '.[] | select(.RUBY_VERSION == "2.7.7") | .RUBY_VERSION'`
-          RUBY_SHA=`cat versions.json | jq -c '.[] | select(.RUBY_VERSION == "2.7.7") | .sha256'`
-          RUBY_BASES=`cat versions.json | jq -c '.[] | select(.RUBY_VERSION == "2.7.7") | .base'`
+          RUBY_MAJOR=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "2.7.7") | .RUBY_MAJOR'`
+          RUBY_VERSION=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "2.7.7") | .RUBY_VERSION'`
+          RUBY_SHA=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "2.7.7") | .sha256'`
+          RUBY_BASES=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "2.7.7") | .base'`
 
           echo "RUBY_DIR=${RUBY_DIR}" >> $GITHUB_OUTPUT
           echo "RUBY_MAJOR=${RUBY_MAJOR}" >> $GITHUB_OUTPUT
