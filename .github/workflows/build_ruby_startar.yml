@@ -60,10 +60,10 @@ jobs:
           echo ${{ matrix.dir }}
 
       -
-        call-ruby-build:
-          uses: ./.github/workflows/build.yml
-          with:
-            RUBY_VERSION: ${{needs.set-matrix.outputs.RUBY_VERSION}}
-            RUBY_SHA: ${{needs.set-matrix.outputs.RUBY_SHA}}
-            RUBY_DIR: ${{matrix.dir}}
+        name: call-ruby-build:
+        uses: ./.github/workflows/build.yml
+        with:
+          RUBY_VERSION: ${{needs.set-matrix.outputs.RUBY_VERSION}}
+          RUBY_SHA: ${{needs.set-matrix.outputs.RUBY_SHA}}
+          RUBY_DIR: ${{matrix.dir}}
 
