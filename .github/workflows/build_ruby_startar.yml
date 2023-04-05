@@ -60,7 +60,7 @@ jobs:
           echo ${{ matrix.dir }}
 
       -
-        name: call-ruby-build:
+        name: call-ruby-build
         uses: ./.github/workflows/build.yml
         with:
           RUBY_VERSION: ${{needs.set-matrix.outputs.RUBY_VERSION}}
