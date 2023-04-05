@@ -63,7 +63,7 @@ jobs:
           echo ${{ matrix.dir }}
 
       -
-        uses: ./.github/workflows/build.yml
+        uses: .github/workflows/build.yml
         with:
           RUBY_VERSION: ${{needs.set-matrix.outputs.RUBY_VERSION}}
           RUBY_SHA: ${{needs.set-matrix.outputs.RUBY_SHA}}
