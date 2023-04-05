@@ -37,6 +37,7 @@ jobs:
           RUBY_VERSION=`cat versions.json | jq -c '.[] | select(.ruby == "2.7.7") | .ruby'`
           RUBY_SHA=`cat versions.json | jq -c '.[] | select(.ruby == "2.7.7") | .sha256'`
           RUBY_DIRS=`cat versions.json | jq -c '.[] | select(.ruby == "2.7.7") | .dir'`
+          echo $RUBY_DIRS
           echo "include='${include}'"
           echo "RUBY_VERSION='${RUBY_VERSION}'" >> $GITHUB_OUTPUT
           echo "RUBY_SHA='${RUBY_SHA}'" >> $GITHUB_OUTPUT
@@ -59,6 +60,7 @@ jobs:
         name: set-matrix2
         id: set-matrix2
         run: |
+          echo ${{needs.set-matrix.outputs.RUBY_DIRS}}
           echo "RUBY_VERSION='${{needs.set-matrix.outputs.RUBY_VERSION}}'" >> $GITHUB_OUTPUT
           echo "RUBY_SHA='${{needs.set-matrix.outputs.RUBY_SHA}}'" >> $GITHUB_OUTPUT
           echo "RUBY_DIRS=${{needs.set-matrix.outputs.RUBY_DIRS}}" >> $GITHUB_OUTPUT
