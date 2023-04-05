@@ -22,7 +22,7 @@ jobs:
     outputs:
       RUBY_VERSION: ${{ steps.set-matrix.outputs.RUBY_VERSION }}
       RUBY_SHA: ${{ steps.set-matrix.outputs.RUBY_SHA }}
-      RUBY_DIR: ${{ steps.set-matrix.outputs.RUBY_DIR }}
+      RUBY_DIRS: ${{ steps.set-matrix.outputs.RUBY_DIRS }}
 
     steps:
       -
@@ -36,19 +36,44 @@ jobs:
           # include=`cat versions.json | jq -c '.[] | select(.ruby == "2.7.7") | {"include": .}'`
           RUBY_VERSION=`cat versions.json | jq -c '.[] | select(.ruby == "2.7.7") | .ruby'`
           RUBY_SHA=`cat versions.json | jq -c '.[] | select(.ruby == "2.7.7") | .sha256'`
-          RUBY_DIR=`cat versions.json | jq -c '.[] | select(.ruby == "2.7.7") | .dir'`
+          RUBY_DIRS=`cat versions.json | jq -c '.[] | select(.ruby == "2.7.7") | .dir'`
           echo "include='${include}'"
           echo "RUBY_VERSION='${RUBY_VERSION}'" >> $GITHUB_OUTPUT
           echo "RUBY_SHA='${RUBY_SHA}'" >> $GITHUB_OUTPUT
-          echo "RUBY_DIR=${RUBY_DIR}" >> $GITHUB_OUTPUT
+          echo "RUBY_DIRS=${RUBY_DIRS}" >> $GITHUB_OUTPUT
 
-  build:
+  set-matrix2:
     runs-on: ubuntu-latest
     needs: set-matrix
 
     strategy:
       matrix:
-        dir: ${{fromJson(needs.set-matrix.outputs.RUBY_DIR)}}
+        dir: ${{fromJson(needs.set-matrix.outputs.RUBY_DIRS)}}
+
+    outputs:
+      RUBY_VERSION: ${{ steps.set-matrix2.outputs.RUBY_VERSION }}
+      RUBY_SHA: ${{ steps.set-matrix2.outputs.RUBY_SHA }}
+      RUBY_DIR: ${{ steps.set-matrix2.outputs.RUBY_DIR }}
+
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: set-matrix2
+        id: set-matrix2
+        run: |
+          echo "RUBY_VERSION='${{needs.set-matrix.outputs.RUBY_VERSION}}'" >> $GITHUB_OUTPUT
+          echo "RUBY_SHA='${{needs.set-matrix.outputs.RUBY_SHA}}'" >> $GITHUB_OUTPUT
+          echo "RUBY_DIR=${{matrix.dir}}" >> $GITHUB_OUTPUT
+
+  build:
+    runs-on: ubuntu-latest
+    needs: set-matrix2
+
+    strategy:
+      matrix:
+        arch: ['linux/amd64', 'linux/arm64']
 
     steps:
       -
@@ -57,16 +82,14 @@ jobs:
       -
         name: test
         run: |
-          echo ${{needs.set-matrix.outputs.RUBY_VERSION}}
-          echo ${{needs.set-matrix.outputs.RUBY_SHA}}
-          echo ${{needs.set-matrix.outputs.RUBY_DIR}}
-          echo ${{ matrix.dir }}
-          ls -la
-
-      -
-        uses: ./.github/workflows/build.yml
-        with:
-          RUBY_VERSION: ${{needs.set-matrix.outputs.RUBY_VERSION}}
-          RUBY_SHA: ${{needs.set-matrix.outputs.RUBY_SHA}}
-          RUBY_DIR: ${{matrix.dir}}
+          echo ${{ steps.set-matrix2.outputs.RUBY_VERSION }}
+          echo ${{ steps.set-matrix2.outputs.RUBY_SHA }}
+          echo ${{ steps.set-matrix2.outputs.RUBY_DIR }}
+      # -
+      #   name: ruby build
+      #   uses: ./.github/workflows/build.yml
+      #   with:
+      #     RUBY_VERSION: ${{needs.set-matrix.outputs.RUBY_VERSION}}
+      #     RUBY_SHA: ${{needs.set-matrix.outputs.RUBY_SHA}}
+      #     RUBY_DIR: ${{matrix.dir}}
 
