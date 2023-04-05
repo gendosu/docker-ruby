@@ -1,75 +1,27 @@
-name: "build"
+name: "sub_build"
 
-on: push
-  # workflow_dispatch:
-  #   inputs:
-  #     version:
-  #       type: choice
-  #       description: "Ruby Version"
-  #       options:
-  #         - "2.7.x"
-  #         - "2.7.7"
-  #         - "3.0.8"
+on:
+  workflow_call:
+    inputs:
+      RUBY_VERSION:
+        required: true
+        type: string
+      RUBY_SHA:
+        required: true
+        type: string
+      RUBY_DIR:
+        required: true
+        type: string
 
 env:
   DOCKER_BUILDKIT: 1
   DISABLE_ASSET_SYNC: 1
 
 jobs:
-  set-matrix:
-    runs-on: ubuntu-latest
-
-    outputs:
-      RUBY_VERSION: ${{ steps.set-matrix.outputs.RUBY_VERSION }}
-      RUBY_SHA: ${{ steps.set-matrix.outputs.RUBY_SHA }}
-      RUBY_DIR: ${{ steps.set-matrix.outputs.RUBY_DIR }}
-
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v3
-
-      - name: set-matrix
-        id: set-matrix
-        run: |
-          cat versions.json
-          # include=`cat versions.json | jq -c '.[] | select(.ruby == "2.7.7") | {"include": .}'`
-          RUBY_VERSION=`cat versions.json | jq -c '.[] | select(.ruby == "2.7.7") | .ruby'`
-          RUBY_SHA=`cat versions.json | jq -c '.[] | select(.ruby == "2.7.7") | .sha256'`
-          RUBY_DIR=`cat versions.json | jq -c '.[] | select(.ruby == "2.7.7") | .dir'`
-          echo "include='${include}'"
-          echo "RUBY_VERSION='${RUBY_VERSION}'" >> $GITHUB_OUTPUT
-          echo "RUBY_SHA='${RUBY_SHA}'" >> $GITHUB_OUTPUT
-          echo "RUBY_DIR=${RUBY_DIR}" >> $GITHUB_OUTPUT
-
   build:
     runs-on: ubuntu-latest
-    needs: set-matrix
-
-    strategy:
-      matrix:
-        dir: ${{fromJson(needs.set-matrix.outputs.RUBY_DIR)}}
-
-    #     # include:
-    #     #   - ruby: 2.7.7
-    #     #     sha256: b38dff2e1f8ce6e5b7d433f8758752987a6b2adfd9bc7571dbc42ea5d04aaaaa
-    #     #   - ruby: 2.7.8
-    #     #     sha256: b38dff2e1f8ce6e5b7d433f8758752987a6b2adfd9bc7571dbc42ea5d04e3e4c
 
     steps:
-      -
-        name: test
-        run: |
-          echo ${{needs.set-matrix.outputs.RUBY_VERSION}}
-          echo ${{needs.set-matrix.outputs.RUBY_SHA}}
-          echo ${{needs.set-matrix.outputs.RUBY_DIR}}
-          echo ${{ matrix.dir }}
-        # env:
-        #   RUBY_VERSION: ${{fromJson(needs.set-matrix.outputs.include).ruby}}
-
-          # echo ${{ github.event.inputs.version }}
-          # echo ${{ matrix.ruby }}
-          # echo ${{ matrix.sha256 }}
       -
         name: Checkout
         uses: actions/checkout@v3
@@ -81,16 +33,16 @@ jobs:
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      # -
-      #   name: Login to Docker Hub
-      #   uses: docker/login-action@v2
-      #   with:
-      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
-      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
-      # -
-      #   name: Build and push
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     context: 2.7/bullseye
-      #     push: true
-      #     tags: gendosu/gentest:${{ github.event.inputs.env }}
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: 2.7/bullseye
+          push: false
+          tags: gendosu/gentest:${{ github.event.inputs.env }}
