@@ -140,7 +140,7 @@ jobs:
           push: false
           tags: gendosu/gentest:${{ steps.setup.outputs.TAG }}
           build-args: |
-            RUBY_MAJOR: ${{ needs.set-matrix.outputs.RUBY_MAJOR }}
-            RUBY_VERSION: ${{ needs.set-matrix.outputs.RUBY_VERSION }}
-            RUBY_DOWNLOAD_SHA256: ${{ needs.set-matrix.outputs.sha256 }}
+            RUBY_MAJOR=${{ needs.set-matrix.outputs.RUBY_MAJOR }}
+            RUBY_VERSION=${{ needs.set-matrix.outputs.RUBY_VERSION }}
+            RUBY_DOWNLOAD_SHA256=${{ needs.set-matrix.outputs.sha256 }}
 
