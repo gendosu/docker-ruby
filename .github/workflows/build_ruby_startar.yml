@@ -60,10 +60,12 @@ jobs:
         name: set-matrix2
         id: set-matrix2
         run: |
+          RUBY_DIRS=${{needs.set-matrix.outputs.RUBY_DIRS}}
           echo ${{needs.set-matrix.outputs.RUBY_DIRS}}
+          echo $RUBY_DIRS
           echo "RUBY_VERSION='${{needs.set-matrix.outputs.RUBY_VERSION}}'" >> $GITHUB_OUTPUT
           echo "RUBY_SHA='${{needs.set-matrix.outputs.RUBY_SHA}}'" >> $GITHUB_OUTPUT
-          echo "RUBY_DIRS=${{needs.set-matrix.outputs.RUBY_DIRS}}" >> $GITHUB_OUTPUT
+          echo "RUBY_DIRS=$RUBY_DIRS" >> $GITHUB_OUTPUT
 
   build:
     runs-on: ubuntu-latest
