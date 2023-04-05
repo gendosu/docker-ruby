@@ -82,9 +82,9 @@ jobs:
       -
         name: test
         run: |
-          echo ${{ steps.set-matrix2.outputs.RUBY_VERSION }}
-          echo ${{ steps.set-matrix2.outputs.RUBY_SHA }}
-          echo ${{ steps.set-matrix2.outputs.RUBY_DIR }}
+          echo ${{ needs.set-matrix2.outputs.RUBY_VERSION }}
+          echo ${{ needs.set-matrix2.outputs.RUBY_SHA }}
+          echo ${{ needs.set-matrix2.outputs.RUBY_DIR }}
       # -
       #   name: ruby build
       #   uses: ./.github/workflows/build.yml
