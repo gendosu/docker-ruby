@@ -61,6 +61,7 @@ jobs:
           echo ${{needs.set-matrix.outputs.RUBY_SHA}}
           echo ${{needs.set-matrix.outputs.RUBY_DIR}}
           echo ${{ matrix.dir }}
+          ls -l
 
       -
         uses: ./.github/workflows/build.yml
