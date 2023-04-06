@@ -98,7 +98,7 @@ jobs:
         name: setup
         id: setup
         run: |
-          TAG=${{ needs.set-matrix.outputs.RUBY_DIR }}-${{ matrix.dir }}-`date +'%Y-%m-%d'`
+          TAG=${{ needs.set-matrix.outputs.RUBY_VERSION }}-${{ matrix.dir }}-`date +'%Y-%m-%d'`
           DIR=${{ needs.set-matrix.outputs.RUBY_DIR }}/${{ matrix.dir }}
           ARCH=${{ matrix.arch }}
           ARCH=${ARCH//linux\//}
