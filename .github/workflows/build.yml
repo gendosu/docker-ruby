@@ -178,6 +178,7 @@ jobs:
         run: |
           ls -la
           echo ${{ matrix.dir }}
-          echo "docker buildx imagetools create -t gendosu/gentest:${{ needs.build.outputs.TAG }} `cat tag-${{needs.build.outputs.TAG}}* | tr '\n' ' '`"
+          TAG=${{ needs.set-matrix.outputs.RUBY_VERSION }}-${{ matrix.dir }}-`date +'%Y-%m-%d'`
+          echo "docker buildx imagetools create -t gendosu/gentest:$TAG `cat tag-$TAG* | tr '\n' ' '`"
           echo ${{needs.build.outputs.DIR}}
-          docker buildx imagetools create -t gendosu/gentest:${{ needs.build.outputs.TAG }} `cat tag-${{needs.build.outputs.TAG}}* | tr '\n' ' '`
+          docker buildx imagetools create -t gendosu/gentest:$TAG `cat tag-${{needs.build.outputs.TAG}}* | tr '\n' ' '`
