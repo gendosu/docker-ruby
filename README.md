@@ -39,7 +39,13 @@ docker login
 docker buildx create --name ruby_builder
 docker buildx use ruby_builder
 
-### ビルド方法
+### ビルド方法（自動）
+
+[GithubのActions](https://github.com/gendosu/docker-ruby/actions/workflows/build.yml)を開いて
+`Run Workflow` をクリックする
+ビルドしたいバージョンを指定してビルド実行する
+
+### ビルド方法（手動）
 
 2.7.7-bullseye
 ```
