@@ -39,7 +39,6 @@ jobs:
       RUBY_VERSION: ${{ steps.set-matrix.outputs.RUBY_VERSION }}
       RUBY_SHA: ${{ steps.set-matrix.outputs.RUBY_SHA }}
       RUBY_BASES: ${{ steps.set-matrix.outputs.RUBY_BASES }}
-      RUBY_REPOSITORY: ${{ steps.set-matrix.outputs.RUBY_REPOSITORY }}
 
     steps:
       -
@@ -83,8 +82,6 @@ jobs:
           echo "RUBY_VERSION=${RUBY_VERSION}" >> $GITHUB_OUTPUT
           echo "RUBY_SHA=${RUBY_SHA}" >> $GITHUB_OUTPUT
           echo "RUBY_BASES=${RUBY_BASES}" >> $GITHUB_OUTPUT
-          echo "RUBY_REPOSITORY=${RUBY_REPOSITORY}"
-          echo "RUBY_REPOSITORY=${RUBY_REPOSITORY}" >> $GITHUB_OUTPUT
 
       - uses: actions/upload-artifact@v3
         with:
@@ -117,7 +114,6 @@ jobs:
           echo ${{needs.set-matrix.outputs.RUBY_VERSION}}
           echo ${{needs.set-matrix.outputs.RUBY_SHA}}
           echo ${{needs.set-matrix.outputs.RUBY_BASES}}
-          echo ${{needs.set-matrix.outputs.RUBY_REPOSITORY}}
       -
         name: Checkout
         uses: actions/checkout@v3
@@ -131,9 +127,13 @@ jobs:
           DIR=${{ needs.set-matrix.outputs.RUBY_DIR }}/${{ matrix.dir }}
           ARCH=${{ matrix.arch }}
           ARCH=${ARCH//linux\//}
+          REPOSITORY_PATH=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_path'`
+          RUBY_REPOSITORY=${{inputs.repository}}/${REPOSITORY_PATH}
+
           echo "ARCH=$ARCH" >> $GITHUB_OUTPUT
           echo "TAG=$TAG" >> $GITHUB_OUTPUT
           echo "DIR=$DIR" >> $GITHUB_OUTPUT
+          echo "RUBY_REPOSITORY=$RUBY_REPOSITORY" >> $GITHUB_OUTPUT
           echo ${{ steps.setup.outputs.DIR }}
       -
         # Add support for more platforms with QEMU (optional)
@@ -156,7 +156,7 @@ jobs:
         with:
           context: ${{ steps.setup.outputs.DIR }}
           push: true
-          tags: ${{ inputs.repository }}:${{ steps.setup.outputs.TAG }}-${{ steps.setup.outputs.ARCH }}
+          tags: ${{ steps.setup.outputs.RUBY_REPOSITORY }}:${{ steps.setup.outputs.TAG }}-${{ steps.setup.outputs.ARCH }}
           platforms: ${{ matrix.arch }}
           build-args: |
             RUBY_MAJOR=${{ needs.set-matrix.outputs.RUBY_MAJOR }}
@@ -205,9 +205,12 @@ jobs:
       -
         name: test
         run: |
+          REPOSITORY_PATH=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_path'`
+          RUBY_REPOSITORY=${{inputs.repository}}/${REPOSITORY_PATH}
+
           ls -la
           echo ${{ matrix.dir }}
           TAG=${{ needs.set-matrix.outputs.RUBY_VERSION }}-${{ matrix.dir }}-`date +'%Y-%m-%d'`
-          echo "docker buildx imagetools create -t ${{ inputs.repository }}:${{ needs.build.outputs.TAG }} `cat tag-${{needs.build.outputs.TAG}}* | tr '\n' ' '`"
+          echo "docker buildx imagetools create -t ${RUBY_REPOSITORY}:${{ needs.build.outputs.TAG }} `cat tag-${{needs.build.outputs.TAG}}* | tr '\n' ' '`"
           echo ${{needs.build.outputs.DIR}}
-          docker buildx imagetools create -t ${{ inputs.repository }}:${{ needs.build.outputs.TAG }} `cat tag-${{needs.build.outputs.TAG}}* | tr '\n' ' '`
+          docker buildx imagetools create -t ${RUBY_REPOSITORY}:${{ needs.build.outputs.TAG }} `cat tag-${{needs.build.outputs.TAG}}* | tr '\n' ' '`
