@@ -58,6 +58,7 @@ jobs:
         id: set-matrix
         run: |
           REPOSITORY_PATH=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_path'`
+          echo $REPOSITORY_PATH
           RUBY_REPOSITORY=${{inputs.repository}}/${REPOSITORY_PATH}
 
           RUBY_DIR=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .RUBY_DIR'`
