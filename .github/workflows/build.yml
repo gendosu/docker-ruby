@@ -75,6 +75,10 @@ jobs:
       matrix:
         dir: ${{ fromJson(needs.set-matrix.outputs.RUBY_BASES) }}
         arch: ['linux/amd64', 'linux/arm64']
+        include:
+          - repository: gendosu/gentest
+            repository_dir: gentest
+
 
     outputs:
       TAG: ${{ steps.setup.outputs.TAG }}
