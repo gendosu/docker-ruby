@@ -88,7 +88,9 @@ jobs:
       -
         name: test
         run: |
-          echo ${{ matrix }}
+          MATRIX=${{matrix}}
+          echo ${{MATRIX}} 
+          echo ${{ matrix.repository_dir }}
           echo ${{needs.set-matrix.outputs.RUBY_DIR}}
           echo ${{needs.set-matrix.outputs.RUBY_MAJOR}}
           echo ${{needs.set-matrix.outputs.RUBY_VERSION}}
