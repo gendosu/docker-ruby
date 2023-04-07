@@ -100,7 +100,7 @@ jobs:
           echo ${{needs.set-matrix.outputs.RUBY_VERSION}}
           echo ${{needs.set-matrix.outputs.RUBY_SHA}}
           echo ${{needs.set-matrix.outputs.RUBY_BASES}}
-          echo "${{needs.set-matrix.outputs.RUBY_REPOSITORY}}"
+          echo ${{needs.set-matrix.outputs.RUBY_REPOSITORY}}
       -
         name: Checkout
         uses: actions/checkout@v3
