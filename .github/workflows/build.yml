@@ -39,6 +39,7 @@ jobs:
       RUBY_VERSION: ${{ steps.set-matrix.outputs.RUBY_VERSION }}
       RUBY_SHA: ${{ steps.set-matrix.outputs.RUBY_SHA }}
       RUBY_BASES: ${{ steps.set-matrix.outputs.RUBY_BASES }}
+      RUBY_REPOSITORY: ${{ steps.set-matrix.outputs.RUBY_REPOSITORY }}
 
     steps:
       -
@@ -56,6 +57,17 @@ jobs:
       - name: set-matrix
         id: set-matrix
         run: |
+          REPOSITORY_PATH=`echo '[
+            {
+              "repository": "gendosu/gentest",
+              "repository_path": "ruby"
+            },
+            {
+              "repository": "gendosu/gentest2",
+              "repository_path": "common/ruby"
+            }
+          ]' | jq -r -c '.[] | select(.repository == ${{ inputs.repository }}) | .repository_path'`
+
           RUBY_DIR=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .RUBY_DIR'`
           RUBY_MAJOR=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .RUBY_MAJOR'`
           RUBY_VERSION=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .RUBY_VERSION'`
@@ -67,6 +79,7 @@ jobs:
           echo "RUBY_VERSION=${RUBY_VERSION}" >> $GITHUB_OUTPUT
           echo "RUBY_SHA=${RUBY_SHA}" >> $GITHUB_OUTPUT
           echo "RUBY_BASES=${RUBY_BASES}" >> $GITHUB_OUTPUT
+          echo "RUBY_REPOSITORY=${{inputs.repository}}/${REPOSITORY_PATH}" >> $GITHUB_OUTPUT
 
   build:
     runs-on: ubuntu-latest
@@ -92,11 +105,10 @@ jobs:
         name: test
         run: |
           MATRIX=${{matrix}}
-          echo ${{MATRIX}} 
           echo ${{ matrix.repository_dir }}
           echo ${{needs.set-matrix.outputs.RUBY_DIR}}
           echo ${{needs.set-matrix.outputs.RUBY_MAJOR}}
           echo ${{needs.set-matrix.outputs.RUBY_VERSION}}
           echo ${{needs.set-matrix.outputs.RUBY_SHA}}
           echo ${{needs.set-matrix.outputs.RUBY_BASES}}
-          echo ${{ fromJson(needs.set-matrix.outputs.RUBY_BASES) }}
+          echo ${{needs.set-matrix.outputs.RUBY_REPOSITORY}}
