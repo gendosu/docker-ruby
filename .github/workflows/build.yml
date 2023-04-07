@@ -73,8 +73,8 @@ jobs:
           echo "RUBY_VERSION=${RUBY_VERSION}" >> $GITHUB_OUTPUT
           echo "RUBY_SHA=${RUBY_SHA}" >> $GITHUB_OUTPUT
           echo "RUBY_BASES=${RUBY_BASES}" >> $GITHUB_OUTPUT
-          echo "RUBY_REPOSITORY=${RUBY_REPOSITORY}/${REPOSITORY_PATH}"
-          echo "RUBY_REPOSITORY='${RUBY_REPOSITORY}/${REPOSITORY_PATH}'" >> $GITHUB_OUTPUT
+          echo "RUBY_REPOSITORY=${RUBY_REPOSITORY}"
+          echo "RUBY_REPOSITORY=${RUBY_REPOSITORY}" >> $GITHUB_OUTPUT
 
   build:
     runs-on: ubuntu-latest
