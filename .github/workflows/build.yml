@@ -57,7 +57,7 @@ jobs:
       - name: set-matrix
         id: set-matrix
         run: |
-          REPOSITORY_PATH=`cat repository.json | jq -r -c '.[] | select(.repository == ${{ inputs.repository }}) | .repository_path'`
+          REPOSITORY_PATH=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_path'`
 
           RUBY_DIR=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .RUBY_DIR'`
           RUBY_MAJOR=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .RUBY_MAJOR'`
