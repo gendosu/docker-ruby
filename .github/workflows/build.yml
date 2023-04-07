@@ -68,6 +68,16 @@ jobs:
           RUBY_SHA=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .sha256'`
           RUBY_BASES=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .base'`
 
+          echo '
+          {
+            "RUBY_DIR": "'${RUBY_DIR}'",
+            "RUBY_MAJOR": "'${RUBY_MAJOR}'",
+            "RUBY_VERSION": "'${RUBY_VERSION}'",
+            "RUBY_SHA": "'${RUBY_SHA}'",
+            "RUBY_BASES": "'${RUBY_BASES}'",
+            "RUBY_REPOSITORY": "'${RUBY_REPOSITORY}'"
+          }
+          ' > setting.json
           echo "RUBY_DIR=${RUBY_DIR}" >> $GITHUB_OUTPUT
           echo "RUBY_MAJOR=${RUBY_MAJOR}" >> $GITHUB_OUTPUT
           echo "RUBY_VERSION=${RUBY_VERSION}" >> $GITHUB_OUTPUT
@@ -75,6 +85,11 @@ jobs:
           echo "RUBY_BASES=${RUBY_BASES}" >> $GITHUB_OUTPUT
           echo "RUBY_REPOSITORY=${RUBY_REPOSITORY}"
           echo "RUBY_REPOSITORY=${RUBY_REPOSITORY}" >> $GITHUB_OUTPUT
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: setting
+          path: setting.json
 
   build:
     runs-on: ubuntu-latest
@@ -91,10 +106,13 @@ jobs:
       DIR: ${{ steps.setup.outputs.DIR }}
 
     steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: setting
       -
         name: test
         run: |
-          MATRIX=${{matrix}}
+          cat setting.json
           echo ${{needs.set-matrix.outputs.RUBY_DIR}}
           echo ${{needs.set-matrix.outputs.RUBY_MAJOR}}
           echo ${{needs.set-matrix.outputs.RUBY_VERSION}}
