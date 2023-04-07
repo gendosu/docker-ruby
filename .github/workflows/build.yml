@@ -23,6 +23,7 @@ on:
         default: "gendosu/gentest"
         options:
           - "gendosu/gentest"
+          - "gendosu/gentest2"
 
 env:
   DOCKER_BUILDKIT: 1
@@ -78,6 +79,8 @@ jobs:
         include:
           - repository: gendosu/gentest
             repository_dir: gentest
+          - repository: gendosu/gentest2
+            repository_dir: gentest2
 
 
     outputs:
