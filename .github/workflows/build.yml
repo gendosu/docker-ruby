@@ -58,6 +58,7 @@ jobs:
         id: set-matrix
         run: |
           REPOSITORY_PATH=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_path'`
+          RUBY_REPOSITORY=${{inputs.repository}}/${REPOSITORY_PATH}
 
           RUBY_DIR=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .RUBY_DIR'`
           RUBY_MAJOR=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .RUBY_MAJOR'`
@@ -70,8 +71,8 @@ jobs:
           echo "RUBY_VERSION=${RUBY_VERSION}" >> $GITHUB_OUTPUT
           echo "RUBY_SHA=${RUBY_SHA}" >> $GITHUB_OUTPUT
           echo "RUBY_BASES=${RUBY_BASES}" >> $GITHUB_OUTPUT
-          echo "RUBY_REPOSITORY='${{inputs.repository}}/${REPOSITORY_PATH}'"
-          echo "RUBY_REPOSITORY='${{inputs.repository}}/${REPOSITORY_PATH}'" >> $GITHUB_OUTPUT
+          echo "RUBY_REPOSITORY=${RUBY_REPOSITORY}/${REPOSITORY_PATH}"
+          echo "RUBY_REPOSITORY=${RUBY_REPOSITORY}/${REPOSITORY_PATH}" >> $GITHUB_OUTPUT
 
   build:
     runs-on: ubuntu-latest
