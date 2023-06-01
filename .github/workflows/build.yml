@@ -3,6 +3,10 @@ name: "build ruby starter"
 on: 
   workflow_dispatch:
     inputs:
+      push:
+        type: boolean
+        description: "Push"
+        default: false
       version:
         type: choice
         description: "Ruby Version"
