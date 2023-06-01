@@ -29,7 +29,6 @@ on:
         default: "gendosu/gentest"
         options:
           - "gendosu/gentest"
-          - "gendosu/gentest2"
 
 env:
   DOCKER_BUILDKIT: 1
