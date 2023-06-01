@@ -36,7 +36,11 @@ env:
 
 jobs:
   set-matrix:
-    runs-on: ubuntu-latest
+    runs-on:
+      [
+        "self-hosted",
+        "ARM&$"
+      ]
 
     outputs:
       RUBY_DIR: ${{ steps.set-matrix.outputs.RUBY_DIR }}
@@ -62,9 +66,10 @@ jobs:
         id: set-matrix
         run: |
           REPOSITORY_PATH=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_path'`
-          echo $REPOSITORY_PATH
-          RUBY_REPOSITORY=${{inputs.repository}}/${REPOSITORY_PATH}
-          echo $RUBY_REPOSITORY
+          REPOSITORY_BASE=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_base'`
+          REPOSITORY_REGION=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .region'`
+          REPOSITORY_CMD=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_cmd'`
+          RUBY_DATE=`date +%Y-%m-%d`
 
           RUBY_DIR=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .RUBY_DIR'`
           RUBY_MAJOR=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .RUBY_MAJOR'`
@@ -79,7 +84,11 @@ jobs:
             "RUBY_VERSION": "'${RUBY_VERSION}'",
             "RUBY_SHA": "'${RUBY_SHA}'",
             "RUBY_BASES": "'${RUBY_BASES}'",
-            "RUBY_REPOSITORY": "'${RUBY_REPOSITORY}'"
+            "RUBY_DATE": "'${RUBY_DATE}'"
+            "REPOSITORY_CMD": "'${REPOSITORY_CMD}'",
+            "REPOSITORY_BASE": "'${REPOSITORY_BASE}'",
+            "REPOSITORY_PATH": "'${REPOSITORY_PATH}'",
+            "REPOSITORY_REGION": "'${REPOSITORY_REGION}'"
           }
           ' > setting.json
           echo "RUBY_DIR=${RUBY_DIR}" >> $GITHUB_OUTPUT
@@ -87,6 +96,11 @@ jobs:
           echo "RUBY_VERSION=${RUBY_VERSION}" >> $GITHUB_OUTPUT
           echo "RUBY_SHA=${RUBY_SHA}" >> $GITHUB_OUTPUT
           echo "RUBY_BASES=${RUBY_BASES}" >> $GITHUB_OUTPUT
+          echo "RUBY_DATE=${RUBY_DATE}" >> $GITHUB_OUTPUT
+          echo "REPOSITORY_CMD=${REPOSITORY_CMD}" >> $GITHUB_OUTPUT
+          echo "REPOSITORY_BASE=${REPOSITORY_BASE}" >> $GITHUB_OUTPUT
+          echo "REPOSITORY_PATH=${REPOSITORY_PATH}" >> $GITHUB_OUTPUT
+          echo "REPOSITORY_REGION=${REPOSITORY_REGION}" >> $GITHUB_OUTPUT
 
       - uses: actions/upload-artifact@v3
         with:
@@ -138,23 +152,27 @@ jobs:
         name: setup
         id: setup
         run: |
-          TAG=${{ needs.set-matrix.outputs.RUBY_VERSION }}-${{ matrix.dir }}-`date +'%Y-%m-%d'`
-          DIR=${{ needs.set-matrix.outputs.RUBY_DIR }}/${{ matrix.dir }}
-          ARCH=${{ matrix.arch }}
+          RUBY_DATE=`date +%Y-%m-%d`
+          RUBY_VERSION=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .RUBY_VERSION'`
+          RUBY_DIR=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .RUBY_DIR'`
+          echo $RUBY_DATE
+          echo $RUBY_VERSION
+          echo $RUBY_DIR
+
+          REPOSITORY_PATH=`cat setting.json | jq -r -c '.REPOSITORY_PATH'`
+          REPOSITORY_BASE=`cat setting.json | jq -r -c '.REPOSITORY_BASE'`
+          REPOSITORY_REGION=`cat setting.json | jq -r -c '.REPOSITORY_REGION'`
+          REPOSITORY_CMD=`cat setting.json | jq -r -c '.REPOSITORY_CMD'`
+
+          TAG=${RUBY_VERSION}-${{ matrix.dir }}-${RUBY_DATE}
+          DIR=${RUBY_DIR}/${{ matrix.dir }}
+          ARCH=${{ matrix.platform }}
           ARCH=${ARCH//linux\//}
-          REPOSITORY_PATH=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_path'`
-          RUBY_REPOSITORY=${{inputs.repository}}/${REPOSITORY_PATH}
 
           echo "ARCH=$ARCH" >> $GITHUB_OUTPUT
           echo "TAG=$TAG" >> $GITHUB_OUTPUT
           echo "DIR=$DIR" >> $GITHUB_OUTPUT
-          echo "RUBY_REPOSITORY=$RUBY_REPOSITORY" >> $GITHUB_OUTPUT
           echo ${{ steps.setup.outputs.DIR }}
-      -
-        # Add support for more platforms with QEMU (optional)
-        # https://github.com/docker/setup-qemu-action
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -170,9 +188,9 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ${{ steps.setup.outputs.DIR }}
-          push: true
-          tags: ${{ steps.setup.outputs.RUBY_REPOSITORY }}:${{ steps.setup.outputs.TAG }}-${{ steps.setup.outputs.ARCH }}
-          platforms: ${{ matrix.arch }}
+          push: ${{ inputs.push }}
+          tags: ${{ inputs.repository }}:${{ steps.setup.outputs.TAG }}-${{ steps.setup.outputs.ARCH }}
+          platforms: ${{ matrix.platform }}
           build-args: |
             RUBY_MAJOR=${{ needs.set-matrix.outputs.RUBY_MAJOR }}
             RUBY_VERSION=${{ needs.set-matrix.outputs.RUBY_VERSION }}
@@ -180,7 +198,6 @@ jobs:
 
       -
         name: test2
-        id: test2
         run: |
           echo ${{ matrix }} > matrix.json
           echo ${{ hashFiles ('matrix.json') }}
@@ -196,7 +213,12 @@ jobs:
           path: tag-${{ steps.setup.outputs.TAG }}-${{steps.setup.outputs.ARCH}}.txt
 
   finally:
-    runs-on: ubuntu-latest
+    runs-on:
+      [
+        "self-hosted",
+        "ARM&$"
+      ]
+
     needs: [set-matrix, build]
 
     strategy:
@@ -211,6 +233,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
+        name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       -
@@ -219,13 +246,13 @@ jobs:
           name: tags
       -
         name: test
+        if: ${{ inputs.push }}
         run: |
           REPOSITORY_PATH=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_path'`
-          RUBY_REPOSITORY=${{inputs.repository}}/${REPOSITORY_PATH}
 
           ls -la
           echo ${{ matrix.dir }}
           TAG=${{ needs.set-matrix.outputs.RUBY_VERSION }}-${{ matrix.dir }}-`date +'%Y-%m-%d'`
-          echo "docker buildx imagetools create -t ${RUBY_REPOSITORY}:${{ needs.build.outputs.TAG }} `cat tag-${{needs.build.outputs.TAG}}* | tr '\n' ' '`"
+          echo "docker buildx imagetools create -t ${{ inputs.repository }}:${{ needs.build.outputs.TAG }} `cat tag-${{needs.build.outputs.TAG}}* | tr '\n' ' '`"
           echo ${{needs.build.outputs.DIR}}
-          docker buildx imagetools create -t ${RUBY_REPOSITORY}:${{ needs.build.outputs.TAG }} `cat tag-${{needs.build.outputs.TAG}}* | tr '\n' ' '`
+          docker buildx imagetools create -t ${{ inputs.repository }}:$TAG `cat tag-$TAG* | tr '\n' ' '`
