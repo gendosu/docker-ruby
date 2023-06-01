@@ -1,10 +1,7 @@
 [
   {
-    "repository": "gendosu/gentest",
+    "repository": "gendosu/ruby",
+    "repository_base": "gendosu/ruby",
     "repository_path": "ruby"
-  },
-  {
-    "repository": "gendosu/gentest2",
-    "repository_path": "common/ruby"
   }
 ]

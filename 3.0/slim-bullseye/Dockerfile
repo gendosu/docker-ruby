@@ -3,4 +3,4 @@ ARG RUBY_MAJOR 3.0
 ARG RUBY_VERSION 3.0.5
 ARG RUBY_DOWNLOAD_SHA256 cf7cb5ba2030fe36596a40980cdecfd79a0337d35860876dc2b10a38675bddde
 
-FROM ruby:$RUBY_VERSION-slim-bullseye
+FROM public.ecr.aws/docker/library/ruby:$RUBY_VERSION-slim-bullseye

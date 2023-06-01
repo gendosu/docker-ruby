@@ -1,4 +1,6 @@
-FROM cimg/ruby:3.0.5-node
+ARG RUBY_VERSION 3.0.5
+
+FROM cimg/ruby:$RUBY_VERSION-node
 
 RUN sudo apt-get update -qq && \
 	  sudo apt-get upgrade -y; \

@@ -1,8 +1,4 @@
-FROM public.ecr.aws/docker/library/buildpack-deps:bullseye
-
-ARG RUBY_MAJOR=2.7
-ARG RUBY_VERSION=2.7.8
-ARG RUBY_DOWNLOAD_SHA256 f22f662da504d49ce2080e446e4bea7008cee11d5ec4858fc69000d0e5b1d7fb
+FROM buildpack-deps:buster
 
 # skip installing gem documentation
 RUN set -eux; \
@@ -12,10 +8,10 @@ RUN set -eux; \
 		echo 'update: --no-document'; \
 	} >> /usr/local/etc/gemrc
 
-ENV LANG C.UTF-8
-ENV RUBY_MAJOR=$RUBY_MAJOR
-ENV RUBY_VERSION=$RUBY_VERSION
-ENV RUBY_DOWNLOAD_SHA256=$RUBY_DOWNLOAD_SHA256
+ENV LANG=C.UTF-8
+ENV RUBY_MAJOR=2.6
+ENV RUBY_VERSION=2.6.6
+ENV RUBY_DOWNLOAD_SHA256=5db187882b7ac34016cd48d7032e197f07e4968f406b0690e20193b9b424841f
 
 # some of ruby's build scripts are written in ruby
 #   we purge system ruby later to make sure our final image uses what we just built
@@ -23,7 +19,6 @@ RUN set -eux; \
 	\
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
-	apt-get upgrade -y; \
 	apt-get install -y --no-install-recommends \
 		bison \
 		dpkg-dev \
@@ -65,7 +60,6 @@ RUN set -eux; \
 	find /usr/local -type f -executable -not \( -name '*tkinter*' \) -exec ldd '{}' ';' \
 		| awk '/=>/ { print $(NF-1) }' \
 		| sort -u \
-		| grep -vE '^/usr/local/lib/' \
 		| xargs -r dpkg-query --search \
 		| cut -d: -f1 \
 		| sort -u \
@@ -76,7 +70,7 @@ RUN set -eux; \
 	cd /; \
 	rm -r /usr/src/ruby; \
 # verify we have no "ruby" packages installed
-	if dpkg -l | grep -i ruby; then exit 1; fi; \
+	! dpkg -l | grep -i ruby; \
 	[ "$(command -v ruby)" = '/usr/local/bin/ruby' ]; \
 # rough smoke test
 	ruby --version; \
@@ -84,10 +78,10 @@ RUN set -eux; \
 	bundle --version
 
 # don't create ".bundle" in all our apps
-ENV GEM_HOME /usr/local/bundle
+ENV GEM_HOME=/usr/local/bundle
 ENV BUNDLE_SILENCE_ROOT_WARNING=1 \
 	BUNDLE_APP_CONFIG="$GEM_HOME"
-ENV PATH $GEM_HOME/bin:$PATH
+ENV PATH=$GEM_HOME/bin:$PATH
 # adjust permissions of a few directories for running "gem install" as an arbitrary user
 RUN mkdir -p "$GEM_HOME" && chmod 777 "$GEM_HOME"
 

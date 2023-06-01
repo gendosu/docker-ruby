@@ -1,9 +1,37 @@
 [
   {
+    "RUBY_DIR": "2.6",
+    "RUBY_MAJOR": "2.6",
+    "RUBY_VERSION": "2.6.6",
+    "sha256": "5db187882b7ac34016cd48d7032e197f07e4968f406b0690e20193b9b424841f",
+    "base": ["buster"]
+  },
+  {
+    "RUBY_DIR": "2.6",
+    "RUBY_MAJOR": "2.6",
+    "RUBY_VERSION": "2.6.7",
+    "sha256": "f43ead5626202d5432d2050eeab606e547f0554299cc1e5cf573d45670e59611",
+    "base": ["buster"]
+  },
+  {
+    "RUBY_DIR": "2.6",
+    "RUBY_MAJOR": "2.6",
+    "RUBY_VERSION": "2.6.8",
+    "sha256": "8262e4663169c85787fdc9bfbd04d9eb86eb2a4b56d7f98373a8fcaa18e593eb",
+    "base": ["buster"]
+  },
+  {
     "RUBY_DIR": "2.7",
     "RUBY_MAJOR": "2.7",
     "RUBY_VERSION": "2.7.2",
     "sha256": "1b95ab193cc8f5b5e59d2686cb3d5dcf1ddf2a86cb6950e0b4bdaae5040ec0d6",
+    "base": ["bullseye", "slim-bullseye"]
+  },
+  {
+    "RUBY_DIR": "2.7",
+    "RUBY_MAJOR": "2.7",
+    "RUBY_VERSION": "2.7.6",
+    "sha256": "54dcd3044726c4ab75a9d4604720501442b229a3aed6a55fe909567da8807f24",
     "base": ["bullseye", "slim-bullseye"]
   },
   {
