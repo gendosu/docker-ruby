@@ -35,9 +35,9 @@ on:
       repository:
         type: choice
         description: "Repository"
-        default: "gendosu/gentest"
+        default: "gendosu/ruby"
         options:
-          - "gendosu/gentest"
+          - "gendosu/ruby"
 
 env:
   DOCKER_BUILDKIT: 1

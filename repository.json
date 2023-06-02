@@ -3,5 +3,10 @@
     "repository": "gendosu/ruby",
     "repository_base": "gendosu/ruby",
     "repository_path": "ruby"
+  },
+  {
+    "repository": "gendosu/gentest",
+    "repository_base": "gendosu/gentest",
+    "repository_path": "ruby"
   }
 ]
