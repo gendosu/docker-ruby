@@ -180,7 +180,8 @@ jobs:
           REPOSITORY_REGION=`cat setting.json | jq -r -c '.REPOSITORY_REGION'`
           REPOSITORY_CMD=`cat setting.json | jq -r -c '.REPOSITORY_CMD'`
 
-          TAG=${RUBY_VERSION}-${{ matrix.dir }}-${RUBY_DATE}
+          # TAG=${RUBY_VERSION}-${{ matrix.dir }}-${RUBY_DATE}
+          TAG=${RUBY_VERSION}-${{ matrix.dir }}
           DIR=${RUBY_DIR}/${{ matrix.dir }}
           ARCH=${{ matrix.platform }}
           ARCH=${ARCH//linux\//}
@@ -268,7 +269,8 @@ jobs:
 
           ls -la
           echo ${{ matrix.dir }}
-          TAG=${{ needs.set-matrix.outputs.RUBY_VERSION }}-${{ matrix.dir }}-`date +'%Y-%m-%d'`
+          # TAG=${{ needs.set-matrix.outputs.RUBY_VERSION }}-${{ matrix.dir }}-`date +'%Y-%m-%d'`
+          TAG=${{ needs.set-matrix.outputs.RUBY_VERSION }}-${{ matrix.dir }}
           echo "docker buildx imagetools create -t ${{ inputs.repository }}:${{ needs.build.outputs.TAG }} `cat tag-${{needs.build.outputs.TAG}}* | tr '\n' ' '`"
           echo ${{needs.build.outputs.DIR}}
           docker buildx imagetools create -t ${{ inputs.repository }}:$TAG `cat tag-$TAG* | tr '\n' ' '`
