@@ -3,6 +3,14 @@ name: "build ruby starter"
 on: 
   workflow_dispatch:
     inputs:
+      arch1:
+        type: boolean
+        description: "X86_64"
+        default: true
+      arch2:
+        type: boolean
+        description: "ARM64"
+        default: true
       push:
         type: boolean
         description: "Push"
@@ -44,6 +52,8 @@ jobs:
       RUBY_VERSION: ${{ steps.set-matrix.outputs.RUBY_VERSION }}
       RUBY_SHA: ${{ steps.set-matrix.outputs.RUBY_SHA }}
       RUBY_BASES: ${{ steps.set-matrix.outputs.RUBY_BASES }}
+      TEST_ARCH: ${{ steps.set-matrix.outputs.TEST_ARCH }}
+      TEST_PLATFORM: ${{ steps.set-matrix.outputs.TEST_PLATFORM }}
 
     steps:
       -
@@ -98,6 +108,20 @@ jobs:
           echo "REPOSITORY_PATH=${REPOSITORY_PATH}" >> $GITHUB_OUTPUT
           echo "REPOSITORY_REGION=${REPOSITORY_REGION}" >> $GITHUB_OUTPUT
 
+          echo ${{ inputs.arch1 }}
+          echo ${{ inputs.arch2 }}
+
+          if [ "${{ inputs.arch1 }}" == true ] && [ "${{ inputs.arch2 }}" != true ]; then
+            echo 'TEST_ARCH=["X86_64"]' >> $GITHUB_OUTPUT
+            echo 'TEST_PLATFORM=[{"arch": "X86_64", "platform": "linux/amd64"}]' >> $GITHUB_OUTPUT
+          elif [ "${{ inputs.arch1 }}" != true ] && [ "${{ inputs.arch2 }}" == true ]; then
+            echo 'TEST_ARCH=["ARM64"]' >> $GITHUB_OUTPUT
+            echo 'TEST_PLATFORM=[{"arch": "ARM64", "platform": "linux/arm64"}]' >> $GITHUB_OUTPUT
+          else
+            echo 'TEST_ARCH=["ARM64", "X86_64"]' >> $GITHUB_OUTPUT
+            echo 'TEST_PLATFORM=[{"arch": "X86_64", "platform": "linux/amd64"}, {"arch": "ARM64", "platform": "linux/arm64"}]' >> $GITHUB_OUTPUT
+          fi
+
       - uses: actions/upload-artifact@v3
         with:
           name: setting
@@ -109,12 +133,8 @@ jobs:
     strategy:
       matrix:
         dir: ${{ fromJson(needs.set-matrix.outputs.RUBY_BASES) }}
-        arch: [X86_64, ARM64]
-        include:
-          - arch: X86_64
-            platform: linux/amd64
-          - arch: ARM64
-            platform: linux/arm64
+        arch: ${{ fromJson(needs.set-matrix.outputs.TEST_ARCH) }}
+        include: ${{ fromJson(needs.set-matrix.outputs.TEST_PLATFORM) }}
 
     runs-on:
       [
