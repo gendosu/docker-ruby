@@ -36,11 +36,7 @@ env:
 
 jobs:
   set-matrix:
-    runs-on:
-      [
-        "self-hosted",
-        "ARM64"
-      ]
+    runs-on: ubuntu-latest
 
     outputs:
       RUBY_DIR: ${{ steps.set-matrix.outputs.RUBY_DIR }}
