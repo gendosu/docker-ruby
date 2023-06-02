@@ -230,11 +230,7 @@ jobs:
           path: tag-${{ steps.setup.outputs.TAG }}-${{steps.setup.outputs.ARCH}}.txt
 
   finally:
-    runs-on:
-      [
-        "self-hosted",
-        "ARM64"
-      ]
+    runs-on: ubuntu-latest
 
     needs: [set-matrix, build]
 
