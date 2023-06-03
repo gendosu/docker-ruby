@@ -38,6 +38,7 @@ on:
         default: "gendosu/ruby"
         options:
           - "gendosu/ruby"
+          - "gendosu/gendosu"
 
 env:
   DOCKER_BUILDKIT: 1
