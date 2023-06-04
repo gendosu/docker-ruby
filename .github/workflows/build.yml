@@ -5,7 +5,7 @@ on:
     inputs:
       arch1:
         type: boolean
-        description: "X86_64"
+        description: "X64"
         default: true
       arch2:
         type: boolean
@@ -114,14 +114,14 @@ jobs:
           echo ${{ inputs.arch2 }}
 
           if [ "${{ inputs.arch1 }}" == true ] && [ "${{ inputs.arch2 }}" != true ]; then
-            echo 'TEST_ARCH=["X86_64"]' >> $GITHUB_OUTPUT
-            echo 'TEST_PLATFORM=[{"arch": "X86_64", "platform": "linux/amd64"}]' >> $GITHUB_OUTPUT
+            echo 'TEST_ARCH=["X64"]' >> $GITHUB_OUTPUT
+            echo 'TEST_PLATFORM=[{"arch": "X64", "platform": "linux/amd64"}]' >> $GITHUB_OUTPUT
           elif [ "${{ inputs.arch1 }}" != true ] && [ "${{ inputs.arch2 }}" == true ]; then
             echo 'TEST_ARCH=["ARM64"]' >> $GITHUB_OUTPUT
             echo 'TEST_PLATFORM=[{"arch": "ARM64", "platform": "linux/arm64"}]' >> $GITHUB_OUTPUT
           else
-            echo 'TEST_ARCH=["ARM64", "X86_64"]' >> $GITHUB_OUTPUT
-            echo 'TEST_PLATFORM=[{"arch": "X86_64", "platform": "linux/amd64"}, {"arch": "ARM64", "platform": "linux/arm64"}]' >> $GITHUB_OUTPUT
+            echo 'TEST_ARCH=["ARM64", "X64"]' >> $GITHUB_OUTPUT
+            echo 'TEST_PLATFORM=[{"arch": "X64", "platform": "linux/amd64"}, {"arch": "ARM64", "platform": "linux/arm64"}]' >> $GITHUB_OUTPUT
           fi
 
       - uses: actions/upload-artifact@v3
