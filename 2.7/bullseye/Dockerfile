@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/buildpack-deps:bullseye
+FROM buildpack-deps:bullseye
 
 ARG RUBY_MAJOR=2.7
 ARG RUBY_VERSION=2.7.8

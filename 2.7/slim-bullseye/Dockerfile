@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/debian:bullseye-slim
+FROM debian:bullseye-slim
 
 ARG RUBY_MAJOR=2.7
 ARG RUBY_VERSION=2.7.8
