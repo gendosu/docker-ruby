@@ -3,17 +3,17 @@
     "repository": "gendosu/ruby",
     "repository_base": "gendosu/ruby",
     "repository_path": "ruby",
-    "repository_cmd": "ecr-public",
-    "repository_type": "ecr",
-    "region": "us-east-1"
+    "repository_cmd": "",
+    "repository_type": "ghcr",
+    "region": ""
   },
   {
     "repository": "gendosu/gentest",
     "repository_base": "gendosu/gentest",
     "repository_path": "ruby",
-    "repository_cmd": "ecr",
-    "repository_type": "ecr",
-    "region": "ap-northeast-1"
+    "repository_cmd": "",
+    "repository_type": "ghcr",
+    "region": ""
   },
   {
     "repository": "ghcr.io/gendosu/ruby",
