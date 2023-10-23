@@ -1,4 +1,4 @@
-name: "build ruby starter"
+name: "build and push ruby"
 
 on: 
   workflow_dispatch:
