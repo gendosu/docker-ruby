@@ -77,6 +77,7 @@ jobs:
           REPOSITORY_BASE=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_base'`
           REPOSITORY_REGION=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .region'`
           REPOSITORY_CMD=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_cmd'`
+          REPOSITORY_TYPE=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_type'`
           RUBY_DATE=`date +%Y-%m-%d`
 
           RUBY_DIR=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .RUBY_DIR'`
@@ -96,7 +97,8 @@ jobs:
             "REPOSITORY_CMD": "'${REPOSITORY_CMD}'",
             "REPOSITORY_BASE": "'${REPOSITORY_BASE}'",
             "REPOSITORY_PATH": "'${REPOSITORY_PATH}'",
-            "REPOSITORY_REGION": "'${REPOSITORY_REGION}'"
+            "REPOSITORY_REGION": "'${REPOSITORY_REGION}'",
+            "REPOSITORY_TYPE": "'${REPOSITORY_TYPE}'"
           }
           ' > setting.json
           echo "RUBY_DIR=${RUBY_DIR}" >> $GITHUB_OUTPUT
@@ -181,6 +183,7 @@ jobs:
           REPOSITORY_BASE=`cat setting.json | jq -r -c '.REPOSITORY_BASE'`
           REPOSITORY_REGION=`cat setting.json | jq -r -c '.REPOSITORY_REGION'`
           REPOSITORY_CMD=`cat setting.json | jq -r -c '.REPOSITORY_CMD'`
+          REPOSITORY_TYPE=`cat setting.json | jq -r -c '.REPOSITORY_TYPE'`
 
           # TAG=${RUBY_VERSION}-${{ matrix.dir }}-${RUBY_DATE}
           TAG=${RUBY_VERSION}-${{ matrix.dir }}
@@ -191,6 +194,7 @@ jobs:
           echo "ARCH=$ARCH" >> $GITHUB_OUTPUT
           echo "TAG=$TAG" >> $GITHUB_OUTPUT
           echo "DIR=$DIR" >> $GITHUB_OUTPUT
+          echo "REPOSITORY_TYPE=$REPOSITORY_TYPE" >> $GITHUB_OUTPUT
           echo ${{ steps.setup.outputs.DIR }}
       # -
       #   name: Set up Docker Buildx
