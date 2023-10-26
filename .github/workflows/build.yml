@@ -155,16 +155,14 @@ jobs:
         id: setup
         run: |
           RUBY_DATE=`date +%Y-%m-%d`
-          RUBY_VERSION=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .RUBY_VERSION'`
           echo $RUBY_DATE
-          echo $RUBY_VERSION
 
           REPOSITORY_PATH=`cat setting.json | jq -r -c '.REPOSITORY_PATH'`
           REPOSITORY_BASE=`cat setting.json | jq -r -c '.REPOSITORY_BASE'`
           REPOSITORY_REGION=`cat setting.json | jq -r -c '.REPOSITORY_REGION'`
           REPOSITORY_CMD=`cat setting.json | jq -r -c '.REPOSITORY_CMD'`
 
-          TAG=${RUBY_VERSION}-${{ matrix.dir }}-${RUBY_DATE}
+          TAG=${{ needs.set-matrix.outputs.RUBY_VERSION }}-${{ matrix.dir }}-${RUBY_DATE}
           DIR=${{ needs.set-matrix.outputs.RUBY_DIR }}/${{ matrix.dir }}
           ARCH=${{ matrix.platform }}
           ARCH=${ARCH//linux\//}
