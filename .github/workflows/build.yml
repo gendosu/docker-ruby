@@ -118,8 +118,10 @@ jobs:
     strategy:
       matrix:
         dir: ${{ fromJson(needs.set-matrix.outputs.RUBY_BASES) }}
-        arch: [ARM64]
+        arch: [X86_64, ARM64]
         include:
+          - arch: X86_64
+            platform: linux/amd64
           - arch: ARM64
             platform: linux/arm64
 
