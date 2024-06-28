@@ -1,5 +1,10 @@
 FROM debian:stretch-slim
 
+RUN set -ex \
+	\
+	&& echo "deb http://archive.debian.org/debian stretch main" > /etc/apt/sources.list \
+	&& echo "deb http://archive.debian.org/debian-security stretch/updates main contrib non-free" >> /etc/apt/sources.list
+
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		bzip2 \
@@ -20,10 +25,10 @@ RUN mkdir -p /usr/local/etc \
 		echo 'update: --no-document'; \
 	} >> /usr/local/etc/gemrc
 
-ENV RUBY_MAJOR 2.3
-ENV RUBY_VERSION 2.3.8
-ENV RUBY_DOWNLOAD_SHA256 910f635d84fd0d81ac9bdee0731279e6026cb4cd1315bbbb5dfb22e09c5c1dfe
-ENV RUBYGEMS_VERSION 3.0.3
+ARG RUBY_MAJOR=2.3
+ARG RUBY_VERSION=2.3.8
+ARG RUBY_DOWNLOAD_SHA256=910f635d84fd0d81ac9bdee0731279e6026cb4cd1315bbbb5dfb22e09c5c1dfe
+ARG RUBYGEMS_VERSION=3.0.3
 
 # some of ruby's build scripts are written in ruby
 #   we purge system ruby later to make sure our final image uses what we just built
