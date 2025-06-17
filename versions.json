@@ -95,13 +95,34 @@
     "RUBY_MAJOR": "3.2",
     "RUBY_VERSION": "3.2.2",
     "sha256": "4b352d0f7ec384e332e3e44cdbfdcd5ff2d594af3c8296b5636c710975149e23",
-    "base": ["slim-bullseye"]
+    "base": ["bullseye", "slim-bullseye"]
   },
   {
-    "RUBY_DIR": "3.3",
+    "RUBY_DIR": "3.0",
+    "RUBY_MAJOR": "3.3",
+    "RUBY_VERSION": "3.3.0",
+    "sha256": "96518814d9832bece92a85415a819d4893b307db5921ae1f0f751a9a89a56b7d",
+    "base": ["bullseye", "slim-bullseye"]
+  },
+  {
+    "RUBY_DIR": "3.0",
+    "RUBY_MAJOR": "3.3",
+    "RUBY_VERSION": "3.3.1",
+    "sha256": "8dc2af2802cc700cd182d5430726388ccf885b3f0a14fcd6a0f21ff249c9aa99",
+    "base": ["bullseye", "slim-bullseye"]
+  },
+  {
+    "RUBY_DIR": "3.0",
+    "RUBY_MAJOR": "3.3",
+    "RUBY_VERSION": "3.3.2",
+    "sha256": "3be1d100ebf2a0ce60c2cd8d22cd9db4d64b3e04a1943be2c4ff7b520f2bcb5b",
+    "base": ["bullseye", "slim-bullseye"]
+  },
+  {
+    "RUBY_DIR": "3.0",
     "RUBY_MAJOR": "3.3",
     "RUBY_VERSION": "3.3.3",
-    "sha256": "83c0995388399c9555bad87e70af069755b5a9d84bbaa74aa22d1e37ff70fc1e",
-    "base": ["slim-bullseye"]
+    "sha256": "83c05b2177ee9c335b631b29b8c077b4770166d02fa527f3a9f6a40d13f3cce2",
+    "base": ["bullseye", "slim-bullseye"]
   }
 ]
