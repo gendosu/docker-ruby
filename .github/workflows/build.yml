@@ -74,6 +74,8 @@ jobs:
         run: |
           GITHUB_ID=`gh api user | jq ".login"`
           echo "${{ secrets.PERSONAL_GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ID --password-stdin
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
 
       - name: Build and push
         uses: docker/build-push-action@v2
