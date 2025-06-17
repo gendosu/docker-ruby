@@ -1,12 +1,8 @@
 name: "build and push ruby"
 
-on: 
+on:
   workflow_dispatch:
     inputs:
-      push:
-        type: boolean
-        description: "Push to Remote"
-        default: false
       version:
         type: choice
         description: "Ruby Version"
@@ -25,273 +21,83 @@ on:
           - "3.1.4"
           - "3.2.1"
           - "3.2.2"
+          - "3.3.0"
+          - "3.3.1"
+          - "3.3.2"
           - "3.3.3"
       repository:
         type: choice
         description: "Repository"
         default: "ghcr.io/gendosu/ruby"
         options:
+          - "gendosu/ruby"
+          - "gendosu/gentest"
           - "ghcr.io/gendosu/ruby"
-          - "ghcr.io/gendosu/gendosu"
 
 env:
   DOCKER_BUILDKIT: 1
   DISABLE_ASSET_SYNC: 1
 
 jobs:
-  set-matrix:
+  build:
     runs-on: ubuntu-latest
 
-    outputs:
-      RUBY_DIR: ${{ steps.set-matrix.outputs.RUBY_DIR }}
-      RUBY_MAJOR: ${{ steps.set-matrix.outputs.RUBY_MAJOR }}
-      RUBY_VERSION: ${{ steps.set-matrix.outputs.RUBY_VERSION }}
-      RUBY_SHA: ${{ steps.set-matrix.outputs.RUBY_SHA }}
-      RUBY_BASES: ${{ steps.set-matrix.outputs.RUBY_BASES }}
-      REPOSITORY_PATH: ${{ steps.set-matrix.outputs.REPOSITORY_PATH }}
-      REPOSITORY_TYPE: ${{ steps.set-matrix.outputs.REPOSITORY_TYPE }}
+    strategy:
+      matrix:
+        dir: ["bullseye", "slim-bullseye"]
+        arch: ["amd64", "arm64"]
+
+    env:
+      GH_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
 
     steps:
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-      - name: set-matrix
-        id: set-matrix
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Get Ruby version info
+        id: ruby-info
         run: |
-          REPOSITORY_PATH=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_path'`
-          REPOSITORY_BASE=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_base'`
-          REPOSITORY_REGION=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .region'`
-          REPOSITORY_CMD=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_cmd'`
-          REPOSITORY_TYPE=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_type'`
-          RUBY_DATE=`date +%Y-%m-%d`
-
           RUBY_DIR=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .RUBY_DIR'`
           RUBY_MAJOR=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .RUBY_MAJOR'`
           RUBY_VERSION=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .RUBY_VERSION'`
           RUBY_SHA=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .sha256'`
-          RUBY_BASES=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .base'`
-
-          echo '
-          {
-            "RUBY_DIR": "'${RUBY_DIR}'",
-            "RUBY_MAJOR": "'${RUBY_MAJOR}'",
-            "RUBY_VERSION": "'${RUBY_VERSION}'",
-            "RUBY_SHA": "'${RUBY_SHA}'",
-            "RUBY_BASES": '${RUBY_BASES}',
-            "RUBY_DATE": "'${RUBY_DATE}'",
-            "REPOSITORY_CMD": "'${REPOSITORY_CMD}'",
-            "REPOSITORY_BASE": "'${REPOSITORY_BASE}'",
-            "REPOSITORY_PATH": "'${REPOSITORY_PATH}'",
-            "REPOSITORY_REGION": "'${REPOSITORY_REGION}'",
-            "REPOSITORY_TYPE": "'${REPOSITORY_TYPE}'"
-          }
-          ' > setting.json
-          echo "RUBY_DIR=${RUBY_DIR}" >> $GITHUB_OUTPUT
-          echo "RUBY_MAJOR=${RUBY_MAJOR}" >> $GITHUB_OUTPUT
-          echo "RUBY_VERSION=${RUBY_VERSION}" >> $GITHUB_OUTPUT
-          echo "RUBY_SHA=${RUBY_SHA}" >> $GITHUB_OUTPUT
-          echo "RUBY_BASES=${RUBY_BASES}" >> $GITHUB_OUTPUT
-          echo "RUBY_DATE=${RUBY_DATE}" >> $GITHUB_OUTPUT
-          echo "REPOSITORY_CMD=${REPOSITORY_CMD}" >> $GITHUB_OUTPUT
-          echo "REPOSITORY_BASE=${REPOSITORY_BASE}" >> $GITHUB_OUTPUT
-          echo "REPOSITORY_PATH=${REPOSITORY_PATH}" >> $GITHUB_OUTPUT
-          echo "REPOSITORY_REGION=${REPOSITORY_REGION}" >> $GITHUB_OUTPUT
-          echo "REPOSITORY_TYPE=\"${REPOSITORY_TYPE}\"" >> $GITHUB_OUTPUT
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: setting
-          path: setting.json
-
-  build:
-    needs: set-matrix
-
-    strategy:
-      matrix:
-        dir: ${{ fromJson(needs.set-matrix.outputs.RUBY_BASES) }}
-        # arch: [X86_64, ARM64]
-        arch: [X86_64]
-        include:
-          - arch: X86_64
-            platform: linux/amd64
-          # - arch: ARM64
-          #   platform: linux/arm64
-
-    runs-on: ubuntu-latest
-
-    outputs:
-      TAG: ${{ steps.setup.outputs.TAG }}
-      DIR: ${{ steps.setup.outputs.DIR }}
-
-    env:
-      GH_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
-
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: setting
-      -
-        name: test
-        run: |
-          cat setting.json
-          echo ${{needs.set-matrix.outputs.RUBY_DIR}}
-          echo ${{needs.set-matrix.outputs.RUBY_MAJOR}}
-          echo ${{needs.set-matrix.outputs.RUBY_VERSION}}
-          echo ${{needs.set-matrix.outputs.RUBY_SHA}}
-          echo ${{needs.set-matrix.outputs.RUBY_BASES}}
-          echo ${{needs.set-matrix.outputs.REPOSITORY_TYPE}}
-          echo ${{needs.set-matrix.outputs.REPOSITORY_PATH}}
-      -
-        name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
-      -
-        name: setup
-        id: setup
-        run: |
           RUBY_DATE=`date +%Y-%m-%d`
-          echo $RUBY_DATE
-
-          REPOSITORY_PATH=`cat setting.json | jq -r -c '.REPOSITORY_PATH'`
-          REPOSITORY_BASE=`cat setting.json | jq -r -c '.REPOSITORY_BASE'`
-          REPOSITORY_REGION=`cat setting.json | jq -r -c '.REPOSITORY_REGION'`
-          REPOSITORY_CMD=`cat setting.json | jq -r -c '.REPOSITORY_CMD'`
-
-          TAG=${{ needs.set-matrix.outputs.RUBY_VERSION }}-${{ matrix.dir }}-${RUBY_DATE}
-          DIR=${{ needs.set-matrix.outputs.RUBY_DIR }}/${{ matrix.dir }}
-          ARCH=${{ matrix.platform }}
-          ARCH=${ARCH//linux\//}
-
-          echo "ARCH=$ARCH" >> $GITHUB_OUTPUT
-          echo "TAG=$TAG" >> $GITHUB_OUTPUT
-          echo "DIR=$DIR" >> $GITHUB_OUTPUT
-          echo ${{ steps.setup.DIR }}
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: aws ECR Login
-        if: ${{ contains(needs.set-matrix.outputs.REPOSITORY_TYPE, 'ecr') }}
-        run: |
-          REPOSITORY_PATH=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_path'`
-          REPOSITORY_BASE=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_base'`
-          REPOSITORY_REGION=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .region'`
-          REPOSITORY_CMD=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_cmd'`
-
-          echo 'aws ${REPOSITORY_CMD} get-login-password --region $REPOSITORY_REGION | docker login --username AWS --password-stdin $REPOSITORY_BASE'
-          aws ${REPOSITORY_CMD} get-login-password --region $REPOSITORY_REGION | docker login --username AWS --password-stdin $REPOSITORY_BASE
-      -
-        name: GHCR Login
-        if: ${{ contains(needs.set-matrix.outputs.REPOSITORY_TYPE, 'ghcr') }}
-        run: |
-          GITHUB_ID=`gh api user | jq ".login"`
-          echo "${{ secrets.PERSONAL_GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ID --password-stdin
-      -
-        name: Build and push
-        id: docker-build
-        uses: docker/build-push-action@v4
-        with:
-          context: ${{ steps.setup.outputs.DIR }}
-          push: ${{ inputs.push }}
-          tags: ${{ inputs.repository }}:${{ steps.setup.outputs.TAG }}-${{ steps.setup.outputs.ARCH }}
-          platforms: ${{ matrix.platform }}
-          build-args: |
-            RUBY_MAJOR=${{ needs.set-matrix.outputs.RUBY_MAJOR }}
-            RUBY_VERSION=${{ needs.set-matrix.outputs.RUBY_VERSION }}
-            RUBY_DOWNLOAD_SHA256=${{ needs.set-matrix.outputs.RUBY_SHA }}
-
-      -
-        name: Create Tagname File
-        run: |
-          echo ${{ matrix }} > matrix.json
-          echo ${{ hashFiles ('matrix.json') }}
-          TAG=${{ steps.setup.outputs.TAG }}
-
-          echo ${{ inputs.repository }}:${{ steps.setup.outputs.TAG }}-${{ steps.setup.outputs.ARCH }} > tag-${{ steps.setup.outputs.TAG }}-${{ steps.setup.outputs.ARCH }}.txt
-          cat tag-${{ steps.setup.outputs.TAG }}-${{ steps.setup.outputs.ARCH }}.txt
-          ls
           
-      - uses: actions/upload-artifact@v3
-        with:
-          name: tags
-          path: tag-${{ steps.setup.outputs.TAG }}-${{steps.setup.outputs.ARCH}}.txt
-
-  finally:
-    runs-on: ubuntu-latest
-
-    needs: [set-matrix, build]
-
-    strategy:
-      matrix:
-        dir: ${{ fromJson(needs.set-matrix.outputs.RUBY_BASES) }}
-
-    env:
-      GH_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
-
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: setting
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      -
-        uses: actions/download-artifact@v3
-        with:
-          name: tags
-      -
-        name: aws ECR Login
-        if: ${{ contains(needs.set-matrix.outputs.REPOSITORY_TYPE, 'ecr') }}
-        run: |
           REPOSITORY_PATH=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_path'`
           REPOSITORY_BASE=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_base'`
-          REPOSITORY_REGION=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .region'`
-          REPOSITORY_CMD=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_cmd'`
+          REPOSITORY_TYPE=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_type'`
+          
+          echo "RUBY_MAJOR=$RUBY_MAJOR" >> $GITHUB_OUTPUT
+          echo "RUBY_VERSION=$RUBY_VERSION" >> $GITHUB_OUTPUT
+          echo "RUBY_SHA=$RUBY_SHA" >> $GITHUB_OUTPUT
+          echo "RUBY_DIR=$RUBY_DIR" >> $GITHUB_OUTPUT
+          echo "TAG=${RUBY_VERSION}-${{ matrix.dir }}-${RUBY_DATE}" >> $GITHUB_OUTPUT
+          echo "REPOSITORY_PATH=$REPOSITORY_PATH" >> $GITHUB_OUTPUT
+          echo "REPOSITORY_BASE=$REPOSITORY_BASE" >> $GITHUB_OUTPUT
+          echo "REPOSITORY_TYPE=$REPOSITORY_TYPE" >> $GITHUB_OUTPUT
 
-          echo 'aws ${REPOSITORY_CMD} get-login-password --region $REPOSITORY_REGION | docker login --username AWS --password-stdin $REPOSITORY_BASE'
-          aws ${REPOSITORY_CMD} get-login-password --region $REPOSITORY_REGION | docker login --username AWS --password-stdin $REPOSITORY_BASE
-      -
-        name: GHCR Login
-        if: ${{ contains(needs.set-matrix.outputs.REPOSITORY_TYPE, 'ghcr') }}
+
+      - name: Login to GitHub Container Registry
         run: |
-          GITHUB_ID=`gh api user | jq ".login"`
+          GITHUB_ID=`gh api user | jq -r ".login"`
           echo "${{ secrets.PERSONAL_GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ID --password-stdin
-      -
-        name: Create Manifest
-        if: ${{ inputs.push }}
-        run: |
-          REPOSITORY_PATH=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_path'`
 
-          ls -la
-          echo ${{ matrix.dir }}
-          TAG=${{ needs.set-matrix.outputs.RUBY_VERSION }}-${{ matrix.dir }}-`date +'%Y-%m-%d'`
-          echo "docker buildx imagetools create -t ${{ inputs.repository }}:${{ needs.build.outputs.TAG }} `cat tag-${{needs.build.outputs.TAG}}* | tr '\n' ' '`"
-          echo ${{needs.build.outputs.DIR}}
-          docker buildx imagetools create -t ${{ inputs.repository }}:$TAG `cat tag-$TAG* | tr '\n' ' '`
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: ${{ steps.ruby-info.outputs.RUBY_DIR }}/${{ matrix.dir }}
+          push: true
+          tags: |
+            ghcr.io/gendosu/ruby:${{ steps.ruby-info.outputs.TAG }}
+            ghcr.io/gendosu/gentest:${{ steps.ruby-info.outputs.TAG }}
+          platforms: linux/${{ matrix.arch }}
+          build-args: |
+            RUBY_MAJOR=${{ steps.ruby-info.outputs.RUBY_MAJOR }}
+            RUBY_VERSION=${{ steps.ruby-info.outputs.RUBY_VERSION }}
+            RUBY_DOWNLOAD_SHA256=${{ steps.ruby-info.outputs.RUBY_SHA }}
