@@ -68,10 +68,10 @@ jobs:
           echo "TAG=${RUBY_VERSION}-${{ matrix.dir }}-${RUBY_DATE}" >> $GITHUB_OUTPUT
 
 
-      - name: Login to GitHub Container Registry
-        run: |
-          GITHUB_ID=`gh api user | jq -r ".login"`
-          echo "${{ secrets.PERSONAL_GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ID --password-stdin
+      # - name: Login to GitHub Container Registry
+      #   run: |
+      #     GITHUB_ID=`gh api user | jq -r ".login"`
+      #     echo "${{ secrets.PERSONAL_GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ID --password-stdin
 
       - name: Build and push
         uses: docker/build-push-action@v2
