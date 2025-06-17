@@ -25,14 +25,6 @@ on:
           - "3.3.1"
           - "3.3.2"
           - "3.3.3"
-      repository:
-        type: choice
-        description: "Repository"
-        default: "ghcr.io/gendosu/ruby"
-        options:
-          - "gendosu/ruby"
-          - "gendosu/gentest"
-          - "ghcr.io/gendosu/ruby"
 
 env:
   DOCKER_BUILDKIT: 1
@@ -69,18 +61,11 @@ jobs:
           RUBY_SHA=`cat versions.json | jq -r -c '.[] | select(.RUBY_VERSION == "${{ inputs.version }}") | .sha256'`
           RUBY_DATE=`date +%Y-%m-%d`
           
-          REPOSITORY_PATH=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_path'`
-          REPOSITORY_BASE=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_base'`
-          REPOSITORY_TYPE=`cat repository.json | jq -r -c '.[] | select(.repository == "${{ inputs.repository }}") | .repository_type'`
-          
           echo "RUBY_MAJOR=$RUBY_MAJOR" >> $GITHUB_OUTPUT
           echo "RUBY_VERSION=$RUBY_VERSION" >> $GITHUB_OUTPUT
           echo "RUBY_SHA=$RUBY_SHA" >> $GITHUB_OUTPUT
           echo "RUBY_DIR=$RUBY_DIR" >> $GITHUB_OUTPUT
           echo "TAG=${RUBY_VERSION}-${{ matrix.dir }}-${RUBY_DATE}" >> $GITHUB_OUTPUT
-          echo "REPOSITORY_PATH=$REPOSITORY_PATH" >> $GITHUB_OUTPUT
-          echo "REPOSITORY_BASE=$REPOSITORY_BASE" >> $GITHUB_OUTPUT
-          echo "REPOSITORY_TYPE=$REPOSITORY_TYPE" >> $GITHUB_OUTPUT
 
 
       - name: Login to GitHub Container Registry
